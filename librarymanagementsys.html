@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Information System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url('https://www.transparenttextures.com/patterns/skulls.png') #f4f4f4;
+            background-size: cover;
+            color: #333;
+        }
+        h1, h2 {
+            font-weight: 500;
+            color: #333;
+            text-align: center;
+        }
+        table {
+            width: 80%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+            font-size: 0.8em;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .button:hover {
+            background-color: #0056b3;
+        }
+        .form-group {
+            text-align: center;
+            margin: 10px 0;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.8em;
+        }
+        .form-group input {
+            padding: 6px;
+            font-size: 0.8em;
+            width: 30%;
+            margin: 5px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .page {
+            display: none;
+        }
+        .active {
+            display: block;
+        }
+        .button-container {
+            text-align: center;
+        }
+        .developers {
+            position: absolute;
+            right: 20px;
+            bottom: 20px;
+            font-size: 1.0em;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div id="page1" class="page active">
+    <h1>Library Information System</h1>
+    <div class="button-container">
+        <button class="button" onclick="showPage('availablePage')">Books Available</button>
+        <button class="button" onclick="showPage('insertPage')">Insert Book</button>
+        <button class="button" onclick="showPage('searchPage')">Search Book</button>
+        <button class="button" onclick="showPage('deletePage')">Delete by ISBN</button>
+    </div>
+    <div class="developers">
+        <p>Developers:</p>
+        <p>Omprakash G</p>
+        <p>Neelamma S</p>
+        <p>Swarnagouri S</p>
+    </div>
+</div>
+
+<div id="availablePage" class="page">
+    <h2>Book List</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Author</th>
+                <th>Edition</th>
+                <th>ISBN</th>
+            </tr>
+        </thead>
+        <tbody id="bookList">
+            <!-- Books will be dynamically added here -->
+        </tbody>
+    </table>
+    <button class="button" onclick="showPage('page1')">Back</button>
+</div>
+
+<div id="insertPage" class="page">
+    <h2>Insert New Book</h2>
+    <form id="insertForm">
+        <div class="form-group">
+            <label for="bookName">Book Name:</label>
+            <input type="text" id="bookName" name="bookName">
+        </div>
+        <div class="form-group">
+            <label for="author">Author:</label>
+            <input type="text" id="author" name="author">
+        </div>
+        <div class="form-group">
+            <label for="edition">Edition:</label>
+            <input type="text" id="edition" name="edition">
+        </div>
+        <div class="form-group">
+            <label for="isbn">ISBN:</label>
+            <input type="text" id="isbn" name="isbn" maxlength="13">
+        </div>
+        <div class="form-group">
+            <button type="button" class="button" onclick="insertBook()">Insert</button>
+            <button type="button" class="button" onclick="showPage('page1')">Back</button>
+        </div>
+    </form>
+</div>
+
+<div id="searchPage" class="page">
+    <h2>Search Book</h2>
+    <form id="searchForm">
+        <div class="form-group">
+            <label for="search">Search by Book Name or Author:</label>
+            <input type="text" id="search" name="search">
+        </div>
+        <div class="form-group">
+            <button type="button" class="button" onclick="searchBook()">Search</button>
+            <button type="button" class="button" onclick="showPage('page1')">Back</button>
+        </div>
+    </form>
+    <h2>Search Result</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Number of Copies</th>
+            </tr>
+        </thead>
+        <tbody id="searchResult">
+            <!-- Search results will be displayed here -->
+        </tbody>
+    </table>
+</div>
+
+<div id="deletePage" class="page">
+    <h2>Delete Book by ISBN</h2>
+    <form id="deleteForm">
+        <div class="form-group">
+            <label for="deleteIsbn">ISBN:</label>
+            <input type="text" id="deleteIsbn" name="deleteIsbn" maxlength="13">
+        </div>
+        <div class="form-group">
+            <button type="button" class="button" onclick="deleteBook()">Delete</button>
+            <button type="button" class="button" onclick="showPage('page1')">Back</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    let books = [
+        {name: 'Introduction to Algorithms', author: 'Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest, and Clifford Stein', edition: '3rd', isbn: '9780262033848'},
+        {name: 'Clean Code: A Handbook of Agile Software Craftsmanship', author: 'Robert C. Martin', edition: '1st', isbn: '9780132350884'},
+        {name: 'Artificial Intelligence: A Modern Approach', author: 'Stuart Russell and Peter Norvig', edition: '4th', isbn: '9780134610993'},
+        {name: 'Computer Networks', author: 'Andrew S. Tanenbaum and David J. Wetherall', edition: '5th', isbn: '9780132126953'},
+        {name: 'Operating System Concepts', author: 'Abraham Silberschatz, Peter B. Galvin, and Greg Gagne', edition: '10th', isbn: '9781119456339'},
+        {name: 'The Pragmatic Programmer: Your Journey to Mastery', author: 'Andrew Hunt and David Thomas', edition: '20th Anniversary Edition', isbn: '9780135957059'},
+        {name: 'Database System Concepts', author: 'Abraham Silberschatz, Henry F. Korth, and S. Sudarshan', edition: '7th', isbn: '9780078022159'},
+        {name: 'Design Patterns: Elements of Reusable Object-Oriented Software', author: 'Erich Gamma, Richard Helm, Ralph Johnson, and John Vlissides', edition: '1st', isbn: '9780201633610'},
+        {name: 'Structure and Interpretation of Computer Programs', author: 'Harold Abelson and Gerald Jay Sussman', edition: '2nd', isbn: '9780262510875'},
+        {name: 'Computer Architecture: A Quantitative Approach', author: 'John L. Hennessy and David A. Patterson', edition: '6th', isbn: '9780128119051'}
+    ];
+
+    function showPage(pageId) {
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => page.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+        if (pageId === 'availablePage') {
+            updateBookList();
+        }
+    }
+
+    function updateBookList() {
+        const table = document.getElementById('bookList');
+        table.innerHTML = '';
+        books.forEach(book => {
+            const newRow = table.insertRow();
+            newRow.insertCell(0).innerText = book.name;
+            newRow.insertCell(1).innerText = book.author;
+            newRow.insertCell(2).innerText = book.edition;
+            newRow.insertCell(3).innerText = book.isbn;
+        });
+    }
+
+    function insertBook() {
+        const bookName = document.getElementById('bookName').value;
+        const author = document.getElementById('author').value;
+        const edition = document.getElementById('edition').value;
+        const isbn = document.getElementById('isbn').value;
+
+        if (isbn.length !== 13) {
+            alert('ISBN must be 13 digits long.');
+            return;
+        }
+
+        const existingBook = books.find(book => book.isbn === isbn);
+        if (existingBook) {
+            alert('ISBN already exists.');
+            return;
+        }
+
+        books.push({name: bookName, author: author, edition: edition, isbn: isbn});
+        alert('Book inserted successfully!');
+        document.getElementById('insertForm').reset();
+        updateBookList();
+        showPage('availablePage');
+    }
+
+    function searchBook() {
+        const searchValue = document.getElementById('search').value.toLowerCase();
+        const resultTable = document.getElementById('searchResult');
+        resultTable.innerHTML = '';
+
+        const filteredBooks = books.filter(book => book.name.toLowerCase().includes(searchValue) || book.author.toLowerCase().includes(searchValue));
+        filteredBooks.forEach(book => {
+            const newRow = resultTable.insertRow();
+            newRow.insertCell(0).innerText = book.name;
+            newRow.insertCell(1).innerText = 1; // Assuming one copy of each book
+        });
+
+        if (filteredBooks.length === 0) {
+            const newRow = resultTable.insertRow();
+            newRow.insertCell(0).innerText = 'No results found';
+            newRow.insertCell(1).innerText = '';
+        }
+    }
+
+    function deleteBook() {
+        const isbn = document.getElementById('deleteIsbn').value;
+        const bookIndex = books.findIndex(book => book.isbn === isbn);
+
+        if (bookIndex === -1) {
+            alert('ISBN not found.');
+            return;
+        }
+
+        books.splice(bookIndex, 1);
+        alert('Book deleted successfully!');
+        document.getElementById('deleteForm').reset();
+        updateBookList();
+        showPage('availablePage');
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        updateBookList();
+    });
+</script>
+
+</body>
+</html>
